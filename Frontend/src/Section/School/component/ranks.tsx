@@ -1,8 +1,17 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Users, Award } from 'lucide-react'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import { getAnalyticsData } from '@/api'
+import {
+  BarChart as ReBarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  LabelList,
+} from 'recharts'
 
 interface Teacher {
   name: string
@@ -52,6 +61,9 @@ const Ranks = () => {
     )
   }
 
+  const teacherChartHeight = useMemo(() => Math.max(teachers.length * 40 + 40, 240), [teachers.length])
+  const studentChartHeight = useMemo(() => Math.max(students.length * 40 + 40, 240), [students.length])
+
   return (
     <div className="space-y-4">
       {/* Teachers Card */}
@@ -63,33 +75,29 @@ const Ranks = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <ScrollArea className="h-[300px] pr-4">
-            <div className="space-y-3">
-              {teachers.map((teacher, index) => (
-                <div
-                  key={index}
-                  className={`flex items-center justify-between p-3 rounded-lg ${
-                    index === 0 ? 'bg-blue-50 border border-blue-200' : 'bg-gray-50'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${
-                      index === 0 ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-700'
-                    }`}>
-                      {index + 1}
-                    </div>
-                    <div>
-                      <p className="font-semibold text-sm">{teacher.name}</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-bold text-lg text-blue-600">{Math.round(teacher.totalPoints)}</p>
-                    <p className="text-xs text-gray-500">points</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </ScrollArea>
+          <div className="w-full">
+            <ResponsiveContainer width="100%" height={teacherChartHeight}>
+              <ReBarChart
+                data={teachers}
+                layout="vertical"
+                margin={{ top: 8, right: 24, left: 8, bottom: 8 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" horizontal vertical={false} />
+                <XAxis type="number" axisLine={false} tickLine={false} />
+                <YAxis
+                  type="category"
+                  dataKey="name"
+                  width={180}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <Tooltip formatter={(value: any) => [Math.round(Number(value)), 'Points']} />
+                <Bar dataKey="totalPoints" fill="#3b82f6" radius={[0, 6, 6, 0]} barSize={28}>
+                  <LabelList dataKey="totalPoints" position="right" />
+                </Bar>
+              </ReBarChart>
+            </ResponsiveContainer>
+          </div>
         </CardContent>
       </Card>
 
@@ -102,33 +110,29 @@ const Ranks = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <ScrollArea className="h-[300px] pr-4">
-            <div className="space-y-3">
-              {students.map((student, index) => (
-                <div
-                  key={index}
-                  className={`flex items-center justify-between p-3 rounded-lg ${
-                    index === 0 ? 'bg-green-50 border border-green-200' : 'bg-gray-50'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${
-                      index === 0 ? 'bg-green-500 text-white' : 'bg-gray-300 text-gray-700'
-                    }`}>
-                      {index + 1}
-                    </div>
-                    <div>
-                      <p className="font-semibold text-sm">{student.name}</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-bold text-lg text-green-600">{Math.round(student.totalPoints)}</p>
-                    <p className="text-xs text-gray-500">points</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </ScrollArea>
+          <div className="w-full">
+            <ResponsiveContainer width="100%" height={studentChartHeight}>
+              <ReBarChart
+                data={students}
+                layout="vertical"
+                margin={{ top: 8, right: 24, left: 8, bottom: 8 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" horizontal vertical={false} />
+                <XAxis type="number" axisLine={false} tickLine={false} />
+                <YAxis
+                  type="category"
+                  dataKey="name"
+                  width={180}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <Tooltip formatter={(value: any) => [Math.round(Number(value)), 'Points']} />
+                <Bar dataKey="totalPoints" fill="#10b981" radius={[0, 6, 6, 0]} barSize={28}>
+                  <LabelList dataKey="totalPoints" position="right" />
+                </Bar>
+              </ReBarChart>
+            </ResponsiveContainer>
+          </div>
         </CardContent>
       </Card>
     </div>
